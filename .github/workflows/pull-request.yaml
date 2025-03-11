@@ -1,6 +1,7 @@
 name: Build the Juju Doctor binary
 
 on:
+  push:
   pull_request:
     branches:
       - main
@@ -9,6 +10,8 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
+    env:
+      GOPRIVATE: github.com/canonical/*
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -21,6 +24,8 @@ jobs:
   build-app:
     name: Build the juju-doctor binary
     runs-on: ubuntu-latest
+    env:
+      GOPRIVATE: github.com/canonical/*
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -28,7 +33,6 @@ jobs:
           go-version: stable
       - name: Build binary
         run: |
-          export GOPRIVATE=github.com/canonical/*
           make build
       - name: Test binary
         run: |
