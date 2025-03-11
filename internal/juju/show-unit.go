@@ -10,17 +10,17 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// GetJujuShowUnitOutput fetches Juju show-unit and converts it to a Starlark object.
+// GetJujuShowUnitOutput fetches Juju show-unit for all application units in the specified model.
 func GetJujuShowUnitOutput(model string) (map[string]any, error) {
 
-	// Get all the unit names from the model
+	// Get all the unit names from the juju status output
 	jujuStatusObj, err := GetJujuStatusOutput(model)
 	if err != nil {
 		return nil, err
 	}
 	jsonData, err := json.Marshal(jujuStatusObj)
 	if err != nil {
-		return nil, fmt.Errorf("Error converting Juju status to JSON:", err)
+		return nil, fmt.Errorf("error converting Juju status to JSON %s", err)
 	}
 	unitNames := []string{}
 	gjson.Get(string(jsonData), "applications").ForEach(func(appKey, appValue gjson.Result) bool {

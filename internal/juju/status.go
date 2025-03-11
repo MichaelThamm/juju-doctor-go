@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// GetJujuStatusOutput fetches Juju status and converts it to a Starlark object.
+// GetJujuStatusOutput fetches the Juju status for the specified model.
 func GetJujuStatusOutput(model string) (map[string]any, error) {
 
 	args := []string{"status", "--format=json"}
