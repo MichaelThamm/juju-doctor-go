@@ -5,14 +5,10 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-
-	"github.com/canonical/juju-doctor/internal/utils"
-
-	starlark "github.com/canonical/starlark/starlark"
 )
 
 // GetJujuStatusOutput fetches Juju status and converts it to a Starlark object.
-func GetJujuStatusOutput(model string) (starlark.Value, error) {
+func GetJujuStatusOutput(model string) (map[string]any, error) {
 
 	args := []string{"status", "--format=json"}
 	if model != "" {
@@ -24,10 +20,10 @@ func GetJujuStatusOutput(model string) (starlark.Value, error) {
 		return nil, fmt.Errorf("error executing [juju %s]: %w", strings.Join(args, " "), err)
 	}
 
-	var data map[string]interface{}
+	var data map[string]any
 	if err := json.Unmarshal(output, &data); err != nil {
 		return nil, fmt.Errorf("error parsing Juju status JSON: %w", err)
 	}
 
-	return utils.ToStarlarkDict(data)
+	return data, nil
 }

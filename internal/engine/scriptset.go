@@ -13,7 +13,8 @@ import (
 )
 
 var AppName = "jujudoctor"
-var StatusReadyEvent = "status_ready"
+var StatusReadyEvent = "status"
+var ShowUnitReadyEvent = "show_unit"
 
 type StarlarkEngine struct {
 	ScriptSet *starform.ScriptSet
@@ -71,10 +72,38 @@ func (engine *StarlarkEngine) FireStatusReadyEvent(ctx context.Context, model st
 		fmt.Printf("error getting juju status output %s\n", err.Error())
 		return err
 	}
+	starlarkStatusObj, err := utils.ToStarlarkDict(jujuStatusObj)
+	if err != nil {
+		fmt.Printf("error converting juju status output to Starlark Dict %s\n", err.Error())
+		return err
+	}
+
 	// Fire a juju status ready event
 	if err := engine.ScriptSet.Handle(ctx, &starform.EventObject{
 		Name:  StatusReadyEvent,
-		Attrs: starlark.StringDict{"input": jujuStatusObj},
+		Attrs: starlark.StringDict{"input": starlarkStatusObj},
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (engine *StarlarkEngine) FireShowUnitReadyEvent(ctx context.Context, model string) error {
+	jujuShowUnitObj, err := juju.GetJujuShowUnitOutput(model)
+	if err != nil {
+		fmt.Printf("error getting juju show-unit output %s\n", err.Error())
+		return err
+	}
+	StarlarkShowUnitObj, err := utils.ToStarlarkDict(jujuShowUnitObj)
+	if err != nil {
+		fmt.Printf("error converting juju show-unit output to Starlark Dict %s\n", err.Error())
+		return err
+	}
+
+	// Fire a juju show-unit ready event
+	if err := engine.ScriptSet.Handle(ctx, &starform.EventObject{
+		Name:  ShowUnitReadyEvent,
+		Attrs: starlark.StringDict{"input": StarlarkShowUnitObj},
 	}); err != nil {
 		return err
 	}
