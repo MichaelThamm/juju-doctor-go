@@ -1,12 +1,11 @@
 package juju
 
-
 import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
 	"strings"
-	
+
 	"github.com/tidwall/gjson"
 )
 
@@ -30,7 +29,7 @@ func GetJujuShowUnitOutput(model string) (map[string]any, error) {
 		})
 		return true
 	})
-	
+
 	// Create a map of each unit's show-unit content
 	results := make(map[string]any)
 	for _, unitName := range unitNames {

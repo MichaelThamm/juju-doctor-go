@@ -14,7 +14,10 @@ func ToStarlarkDict(rawData map[string]any) (starlark.Value, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error converting key %q: %v", key, err)
 		}
-		starlarkDict.SetKey(starlark.String(key), starlarkValue)
+		err = starlarkDict.SetKey(starlark.String(key), starlarkValue)
+		if err != nil {
+			return nil, fmt.Errorf("error setting key %q in Starlark dict: %v", key, err)
+		}
 	}
 	return starlarkDict, nil
 }
